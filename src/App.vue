@@ -8,6 +8,12 @@
 import MainPage from './components/MainPage.vue'
 </script>
 
-<style scoped>
-
+<style>
+*,
+*::after,
+*::before {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
 </style>
