@@ -26,10 +26,12 @@
       <p>{{ description }}</p>
     </div>
   </div>
+  <div class="error">
+    <p>{{ error }}</p>
+  </div>
 </template>
 
 <script>
-import axios from "axios";
 import $api from "@/api/index.js";
 
 export default {
@@ -44,46 +46,24 @@ export default {
     ],
     selectedItem: "",
     description: "",
+    error: ""
   }),
   methods: {
     getFilms() {
-      // console.log($api.get)
       $api
         .get("films/top")
         .then((response) => (this.films = response.data.films))
         .catch((error) => (this.error = error));
     },
-    // getId() {
-    // const config = {
-    //   headers: {
-    //     "X-API-KEY": "56dd76f7-19f6-4e8c-96de-c03987d8470c",
-    //     "Content-Type": "application/json",
-    //     withCredentials: true,
-    //   },
-    // };
-    //   axios
-    //     .get(
-    //       `https://kinopoiskapiunofficial.tech/api/v2.2/films/` +
-    //         this.selectedItem.filmId,
-    //       config
-    //     )
-    //     .then((response) => (this.description = response.data.description))
-    //     .catch((error) => (this.error = error));
-    // },
+    getId() {
+      $api
+        .get(`films/${this.selectedItem.filmId}`)
+        .then((response) => (this.description = response.data.description))
+        .catch((error) => (this.error = error));
+    },
   },
   mounted() {
     this.getFilms();
-    // const config = {
-    //   headers: {
-    //     "X-API-KEY": "56dd76f7-19f6-4e8c-96de-c03987d8470c",
-    //     "Content-Type": "application/json",
-    //     withCredentials: true,
-    //   },
-    // };
-    //   axios
-    //     .get("https://kinopoiskapiunofficial.tech/api/v2.2/films/top", config)
-    //     .then((response) => (this.films = response.data.films))
-    //     .catch((error) => (this.error = error));
   },
 };
 </script>
@@ -122,5 +102,10 @@ h1 {
 
 .descript {
   text-align: center;
+}
+
+.error {
+  text-align: center;
+  color: red;
 }
 </style>
