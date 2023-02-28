@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const API_URL = "https://kinopoiskapiunofficial.tech/api/v2.2";
+export const API_URL = "https://kinopoiskapiunofficial.tech/api/";
 
 const $api = axios.create({
     baseURL: API_URL,

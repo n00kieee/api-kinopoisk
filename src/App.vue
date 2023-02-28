@@ -16,4 +16,7 @@ import MainPage from './components/MainPage.vue'
   margin: 0;
   box-sizing: border-box;
 }
+body {
+  background-color: rgba(20, 20, 20, 0.8);
+}
 </style>
