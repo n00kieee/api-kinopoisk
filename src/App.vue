@@ -1,11 +1,15 @@
 <template>
-    <div class="wrapper">
-      <MainPage/>
-    </div>
+  <MainPage/>
 </template>
 
-<script setup>
+<script>
 import MainPage from './components/MainPage.vue'
+
+export default {
+  components: {
+    MainPage,
+  },
+}
 </script>
 
 <style>
@@ -16,6 +20,7 @@ import MainPage from './components/MainPage.vue'
   margin: 0;
   box-sizing: border-box;
 }
+
 body {
   background-color: rgba(20, 20, 20, 0.8);
 }

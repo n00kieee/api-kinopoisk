@@ -1,24 +1,26 @@
 <template>
   <header class="header">
     <a href="https://www.kinopoisk.ru/"
-    ><img class="logo" src="@/assets/logo.svg"
+    ><img class="logo" src="@/assets/logo.svg" alt="logo"
     />
     </a>
     <nav class="nav">
-      <li>
-        <a href="https://hd.kinopoisk.ru/">Онлайн-кинотеатр</a>
-      </li>
-      <li>
-        <a
-            href="https://www.kinopoisk.ru/special/oscar/?utm_source=kinopoisk&utm_medium=selfpromo_kp&utm_campaign=button_header"
-        >Оскар-2023
-        </a>
-      </li>
+      <ul>
+        <li>
+          <a href="https://hd.kinopoisk.ru/">Онлайн-кинотеатр</a>
+        </li>
+        <li>
+          <a
+              href="https://www.kinopoisk.ru/special/oscar/?utm_source=kinopoisk&utm_medium=selfpromo_kp&utm_campaign=button_header"
+          >Оскар-2023
+          </a>
+        </li>
+      </ul>
     </nav>
     <div class="select-film">
       <select
           v-model="selectedItem"
-          @change="$emit('selected', selectedItem, getData())"
+          @change="$emit('selected', selectedItem, getData(), loadData())"
       >
         <option disabled value="">Выберите фильм</option>
         <option v-for="(films, i) in films" :value="films" :key="i">
@@ -28,13 +30,22 @@
     </div>
   </header>
 
-  <div class="movie-card" v-if="selectedItem">
+  <div class="movie-card" v-if="selectedItem"
+       data-aos="fade-right"
+       data-aos-offset="300"
+       data-aos-easing="ease-in-sine"
+  >
+    <transition name="fade" v-if="isLoaded">
+      <div class="loader">
+        <div class="loading"></div>
+      </div>
+    </transition>
     <div class="info-section">
       <div class="movie-header">
         <img class="img-prev" :src="selectedItem.posterUrlPreview"
              alt=""/>
         <h1>{{ selectedItem.nameRu }}</h1>
-        <h4>{{ selectedItem.year }}, {{ directorRu }}</h4>
+        <h4>{{ selectedItem.year }} , {{ directorRu }}</h4>
         <span class="minutes">{{ selectedItem.filmLength }}</span>
         <p class="type"
            v-for="item in selectedItem.genres"
@@ -61,7 +72,8 @@
 <script>
 import $api from "@/api/index.js";
 import {createToast} from 'mosha-vue-toastify';
-import 'mosha-vue-toastify/dist/style.css'
+import 'mosha-vue-toastify/dist/style.css';
+import AOS from "aos";
 
 
 export default {
@@ -80,7 +92,8 @@ export default {
     selectedItem: "",
     shortDescription: "",
     directorRu: "",
-    trailerUrl: ""
+    trailerUrl: "",
+    isLoaded: false,
   }),
   methods: {
     getFilms() {
@@ -88,12 +101,12 @@ export default {
           .get("v2.2/films/top")
           .then((response) => (this.films = response.data.films))
           .then((loadApi) => createToast(loadApi = "Успешное подключение к API", {
-            showIcon: 'true',
+            showIcon: true,
             type: 'success',
             transition: 'zoom',
           }))
           .catch((error) => createToast(error = "Ошибка подключения к API", {
-            showIcon: 'true',
+            showIcon: true,
             type: 'warning',
             transition: 'zoom',
           }));
@@ -103,7 +116,7 @@ export default {
           .get(`v2.2/films/${this.selectedItem.filmId}`)
           .then((response) => (this.shortDescription = response.data.shortDescription))
           .catch((error) => createToast(error = "Ошибка получения ID выбраного фильма", {
-            showIcon: 'true',
+            showIcon: true,
             type: 'warning',
             transition: 'zoom',
           }));
@@ -111,7 +124,7 @@ export default {
           .get(`v1/staff?filmId=${this.selectedItem.filmId}`)
           .then((response) => (this.directorRu = response.data[0].nameRu))
           .catch((error) => createToast(error = "Ошибка получения directorRu выбраного фильма", {
-            showIcon: 'true',
+            showIcon: true,
             type: 'warning',
             transition: 'zoom',
           }));
@@ -119,14 +132,21 @@ export default {
           .get(`v2.2/films/${this.selectedItem.filmId}/videos`)
           .then((response) => (this.trailerUrl = response.data.items[0].url))
           .catch((error) => createToast(error = "Ошибка получения trailerUrl выбраного фильма", {
-            showIcon: 'true',
+            showIcon: true,
             type: 'warning',
             transition: 'zoom',
           }));
     },
+    loadData() {
+      this.isLoaded = true;
+      setTimeout(() => {
+        this.isLoaded = false;
+      }, 1000);
+    },
   },
   mounted() {
     this.getFilms();
+    AOS.init();
   },
 };
 </script>
@@ -168,6 +188,12 @@ select {
   flex-direction: row;
 }
 
+ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .logo {
   margin: 25px;
 }
@@ -190,7 +216,6 @@ select {
 }
 
 .movie-card:hover {
-  transform: scale(1.02);
   transition: all 0.4s;
   box-shadow: 0 0 120px -55px rgba(255, 51, 0, 0.5);
 }
@@ -279,7 +304,7 @@ select {
 }
 
 .movie-card .info-section .trailer .trailer-btn:hover {
-  background: linear-gradient(135deg,#eb4e00 69.91%,#c5ac00);
+  background: linear-gradient(135deg, #eb4e00 69.91%, #c5ac00);
   transform: scale(1.05);
 }
 
@@ -291,6 +316,42 @@ select {
   right: 0;
   background-size: cover;
   border-radius: 11px;
+}
+
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+  z-index: 9999;
+}
+
+.loading {
+  height: 70px;
+  width: 70px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent #EB4E00FF;
+  border-radius: 100%;
+  animation: rotate 0.75s linear infinite;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg) translatez(0);
+  }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 
 @media screen and (min-width: 768px) {
