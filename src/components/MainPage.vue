@@ -15,7 +15,7 @@
         </a>
       </li>
     </nav>
-    <div class="search">
+    <div class="select-film">
       <select
           v-model="selectedItem"
           @change="$emit('selected', selectedItem, getData())"
@@ -172,7 +172,7 @@ select {
   margin: 25px;
 }
 
-.search {
+.select-film {
   display: flex;
   align-items: center;
 }
